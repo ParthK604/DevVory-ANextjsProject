@@ -32,9 +32,9 @@ export default async function Dashboard() {
 
     <div className="p-6">
 
-      <h1 className="text-4xl font-bold mb-6">
-        Welcome {session.user.name}
-      </h1>
+      <h1 className="text-3xl md:text-4xl font-bold mb-6">
+      Welcome {session.user.name}
+     </h1>
 
       <div className="mb-4 flex justify-between items-center">
 
@@ -50,32 +50,39 @@ export default async function Dashboard() {
 
       </div>
 
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
 
-        {knowledges.map((item) => (
+  {knowledges.map((item) => (
 
-          <div key={item._id} className="flex items-center gap-2">
+    <div
+      key={item._id}
+      className="flex items-center justify-between gap-2 border p-3 rounded-lg hover:shadow-md transition"
+    >
 
-            {/* Box Navigation */}
-            <Link
-              href={`/dashboard/${item._id}`}
-              className="flex-1"
-            >
-              <Box title={item.title} />
-            </Link>
+      {/* Title Box */}
+      <Link
+        href={`/dashboard/${item._id}`}
+        className="flex-1 truncate"
+      >
+        <Box title={item.title} />
+      </Link>
 
-            {/* Important Star */}
-            {item.important && (
-              <FaStar className="text-yellow-500 text-lg" />
-            )}
+      {/* Icons */}
+      <div className="flex items-center gap-2 shrink-0">
 
-           <DeleteButton id={String(item._id)}/>
+        {item.important && (
+          <FaStar className="text-yellow-500 text-lg sm:text-xl" />
+        )}
 
-          </div>
-
-        ))}
+        <DeleteButton id={String(item._id)} />
 
       </div>
+
+    </div>
+
+  ))}
+
+</div>
 
     </div>
   )

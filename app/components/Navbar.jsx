@@ -7,9 +7,11 @@ const Navbar = () => {
     const { data:session }=useSession();
     return (
     <nav className='h-15 justify-between items-center px-3 bg-purple-400 flex text-white'>
-    <div className="logo font-bold text-lg">
-        <Link href="/">DevVault</Link>
-    </div>
+   <div className="logo font-bold text-lg">
+  <Link href={session ? "/dashboard" : "/"}>
+    DevVory
+  </Link>
+</div>
     <ul className="flex gap-4 items-center justify-center">
      <Link href="/about"><li>About</li></Link>
     <li>
