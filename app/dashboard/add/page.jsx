@@ -7,12 +7,46 @@ import { CldUploadWidget } from "next-cloudinary"
 
 export default function AddPage() {
 
+const [isDisabled, setIsDisabled] = useState(false)
+
+const onSubmit = async (data) => {
+
+  setIsDisabled(true)   // disable immediately
+
+  const payload = {
+    ...data,
+    links,
+    images: images.map(img => ({ url: img.url })),
+    pdfs
+  }
+
+  try {
+
+    await fetch("/api/knowledge/add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    })
+
+    router.push("/dashboard")
+
+  } catch (error) {
+
+    console.error(error)
+    setIsDisabled(false) // re-enable if error happens
+
+  }
+
+}
+
   const router = useRouter()
   const {
-  register,
-  handleSubmit,
-  formState: { errors }
-} = useForm()
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm()
 
   const [links, setLinks] = useState([""])
   const [images, setImages] = useState([])
@@ -68,29 +102,12 @@ export default function AddPage() {
     }
 
     const updated = [...images]
-    updated.splice(index,1)
+    updated.splice(index, 1)
     setImages(updated)
   }
 
-  const onSubmit = async (data) => {
+  
 
-    const payload = {
-      ...data,
-      links,
-      images: images.map(img => ({ url: img.url })),
-      pdfs
-    }
-
-    await fetch("/api/knowledge/add", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    })
-
-    router.push("/dashboard")
-  }
 
   return (
 
@@ -102,54 +119,54 @@ export default function AddPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
 
-       {/* TITLE */}
+        {/* TITLE */}
 
-<div>
-  <p className="font-semibold mb-1">Enter a Title</p>
+        <div>
+          <p className="font-semibold mb-1">Enter a Title</p>
 
-  <input
-    {...register("title", {
-      required: "Title is required",
-      maxLength: {
-        value: 20,
-        message: "Title cannot exceed 20 characters"
-      }
-    })}
-    placeholder="Title"
-    className="border p-3 rounded w-full"
-  />
+          <input
+            {...register("title", {
+              required: "Title is required",
+              maxLength: {
+                value: 20,
+                message: "Title cannot exceed 20 characters"
+              }
+            })}
+            placeholder="Title"
+            className="border p-3 rounded w-full"
+          />
 
-  {errors.title && (
-    <p className="text-red-500 text-sm mt-1">
-      {errors.title.message}
-    </p>
-  )}
-</div>
+          {errors.title && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.title.message}
+            </p>
+          )}
+        </div>
 
 
-{/* DESCRIPTION */}
+        {/* DESCRIPTION */}
 
-<div>
-  <p className="font-semibold mb-1">Enter a Short Description</p>
+        <div>
+          <p className="font-semibold mb-1">Enter a Short Description</p>
 
-  <input
-    {...register("description", {
-      required: "Description is required",
-      maxLength: {
-        value: 80,
-        message: "Description cannot exceed 80 characters"
-      }
-    })}
-    placeholder="Short Description"
-    className="border p-3 rounded w-full"
-  />
+          <input
+            {...register("description", {
+              required: "Description is required",
+              maxLength: {
+                value: 80,
+                message: "Description cannot exceed 80 characters"
+              }
+            })}
+            placeholder="Short Description"
+            className="border p-3 rounded w-full"
+          />
 
-  {errors.description && (
-    <p className="text-red-500 text-sm mt-1">
-      {errors.description.message}
-    </p>
-  )}
-</div>
+          {errors.description && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.description.message}
+            </p>
+          )}
+        </div>
 
         {/* NOTES */}
         <div>
@@ -162,7 +179,7 @@ export default function AddPage() {
             {...register("notes")}
             placeholder="Start writing your notes..."
             className="border p-3 rounded w-full resize-none overflow-hidden min-h-30"
-            onInput={(e)=>{
+            onInput={(e) => {
               e.target.style.height = "auto"
               e.target.style.height = e.target.scrollHeight + "px"
             }}
@@ -217,7 +234,7 @@ export default function AddPage() {
             options={{
               multiple: true,
               resourceType: "image",
-              clientAllowedFormats: ["jpg","jpeg","png","webp"]
+              clientAllowedFormats: ["jpg", "jpeg", "png", "webp"]
             }}
             onSuccess={(result) => {
 
@@ -288,7 +305,7 @@ export default function AddPage() {
             options={{
               multiple: true,
               resourceType: "raw",
-              clientAllowedFormats: ["pdf","ppt","pptx","doc","docx","xls"]
+              clientAllowedFormats: ["pdf", "ppt", "pptx", "doc", "docx", "xls"]
             }}
             onSuccess={(result) => {
 
@@ -330,9 +347,13 @@ export default function AddPage() {
 
         <button
           type="submit"
-          className="bg-purple-600 text-white p-3 rounded mt-4"
+          disabled={isDisabled}
+          className={`p-3 rounded mt-4 text-white ${isDisabled
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-purple-600 hover:bg-purple-700"
+            }`}
         >
-          Save Knowledge
+          {isDisabled ? "Saving..." : "Save Knowledge"}
         </button>
 
       </form>
